@@ -1,95 +1,94 @@
-<h1> Assessment Platform</h1>
-<br>
-<h3>student</h3>
-<br>
-<span>1 . Messages </span>
-<br>
-<span>2 . Exams</span>
-<br>
-<span>3. Results</span>
-<br>
-<span>4 . Help</span>
-<br>
-<h3>Teacher</h3>
-<br>
-<span>1 . Send messages </span>
-<br>
-<span>2 . Add Exams</span>
-<br>
-<span>3. View Results</span>
-<br>
-<span>4 . Manage Students</span>
-<br>
-<span>4 . Help</span>
-<br>
-<h3>Admin</h3>
-<br>
-<span>Logs</span>
-<br>
-<span>Previlages</span>
+# Online Examination System
 
-<h2>Running the Project with XAMPP</h2>
+## Overview
 
-<h3>Prerequisites</h3>
-<ul>
-    <li><a href="https://www.apachefriends.org/index.html">XAMPP</a> installed on your machine.</li>
-</ul>
+The Online Examination System is a comprehensive platform designed to facilitate the creation, management, and execution of exams for students. It supports various types of questions, including multiple-choice, single-choice, and coding questions. The system also includes features for teachers to manage student records, view results, and send announcements.
 
-<h3>Steps to Run the Project</h3>
-<ol>
-    <li>
-        <strong>Start XAMPP:</strong>
-         <ul>
-            <li>Open XAMPP Control Panel.</li>
-            <li>Start the <code>Apache</code> and <code>MySQL</code> modules.</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Clone the Repository:</strong>
-        <ul>
-            <li>Clone this repository to your local machine.</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Move Project to XAMPP Directory:</strong>
-        <ul>
-            <li>Copy the project folder to the <code>htdocs</code> directory inside your XAMPP installation directory (e.g., <code>C:\xampp\htdocs\your_project</code>).</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Create the Database:</strong>
-        <ul>
-            <li>Open your web browser and go to <a href="http://localhost/phpmyadmin">http://localhost/phpmyadmin</a>.</li>
-            <li>Click on the <code>Databases</code> tab.</li>
-            <li>Create a new database (e.g., <code>examportal</code>).</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Import the Database:</strong>
-        <ul>
-            <li>Select the newly created database.</li>
-            <li>Click on the <code>Import</code> tab.</li>
-            <li>Click on <code>Choose File</code> and select the <code>db/db_eval.sql</code> file from the project directory.</li>
-            <li>Click <code>Go</code> to import the database schema and data.</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Configure the Project:</strong>
-        <ul>
-            <li>Open the <code>config.php</code> file in the project directory.</li>
-            <li>Update the database configuration settings if necessary (e.g., database name, username, password).</li>
-        </ul>
-    </li>
-     <li>
-        <strong>Access the Project:</strong>
-        <ul>
-            <li>Open your web browser and go to <a href="http://localhost/your_project">http://localhost/your_project</a>.</li>
-        </ul>
-    </li>
-</ol>
+## Features
 
-<h3>Additional Notes</h3>
-<ul>
-    <li>Ensure that the <code>config.php</code> file has the correct database credentials.</li>
-    <li>If you encounter any issues, check the XAMPP Control Panel for error messages and ensure that the <code>Apache</code> and <code>MySQL</code> services are running.</li>
-</ul>
+### General Features
+- **User Authentication**: Secure login for students, teachers, and administrators.
+- **Role-Based Access**: Different dashboards and functionalities for students, teachers, and administrators.
+- **Session Management**: Secure session handling to ensure user data is protected.
+- **Error Handling**: Comprehensive error handling and logging for debugging and maintenance.
+
+### Teacher Features
+- **Exam Management**: Create, edit, and delete exams.
+- **Question Management**: Add, edit, and delete questions for exams.
+- **Student Records**: View and manage student records.
+- **Results**: View and manage exam results.
+- **Announcements**: Send announcements to students.
+
+### Student Features
+- **Exam Portal**: Take exams with a timer and full-screen mode to prevent cheating.
+- **Results**: View exam results and performance.
+- **Announcements**: Receive announcements from teachers.
+
+### Admin Features
+- **User Management**: Manage users, including students, teachers, and other administrators.
+- **Assessment Configuration**: Configure and schedule assessments.
+- **System Monitoring**: Monitor system performance and user activity.
+- **Reports**: Generate and export reports.
+- **Settings**: Manage system settings, user roles, and API configurations.
+
+## Installation
+
+### Prerequisites
+- PHP 7.0 or higher
+- MySQL 5.6 or higher
+- Web server (Apache, Nginx, etc.)
+
+### Steps
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/assessment-system-main.git
+   cd online-examination-system
+   ```
+
+2. **Database Setup**:
+   - Create a new MySQL database.
+   - Import the database schema from `db_eval.sql`.
+
+3. **Configuration**:
+   - Update the database connection settings in `config.php`.
+
+4. **Web Server Configuration**:
+   - Configure your web server to point to the project directory.
+   - Ensure PHP and MySQL are properly configured.
+
+5. **Access the Application**:
+   - Open your web browser and navigate to the application URL.
+
+## Usage
+
+### Logging In
+- **Students**: Navigate to `login_student.php` and log in with your credentials.
+- **Teachers**: Navigate to `login_teacher.php` and log in with your credentials.
+- **Administrators**: Navigate to `login_Admin.php` and log in with your credentials.
+
+### Dashboard
+- **Students**: Access your dashboard to view exams, results, and announcements.
+- **Teachers**: Access your dashboard to manage exams, students, and view results.
+- **Administrators**: Access your dashboard to manage users, configure assessments, and monitor system performance.
+
+## Contributing
+
+We welcome contributions to improve the Online Examination System. Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes and commit them (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a new Pull Request.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+## Contact
+
+For any questions or support, please contact the project maintainers at [email@example.com](mailto:email@example.com).
+
+---
+
+Thank you for using the Online Examination System! We hope it serves your needs effectively.
