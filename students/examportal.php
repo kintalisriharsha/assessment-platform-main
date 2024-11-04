@@ -143,7 +143,8 @@ while ($rowd = mysqli_fetch_array($res)) {
     </nav>
 
     <div class="home-content">
-      <div class="stat-boxes">
+      <div class="stat-b
+      oxes">
         <div class="recent-stat box" style="width: 100%;">
           <div>
             <h3>Exam name: <?php echo $exname ?><?php echo '
