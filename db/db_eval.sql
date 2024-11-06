@@ -55,18 +55,7 @@ CREATE TABLE `exm_list` (
   `subject` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO EXM_LIST VALUES (20
-'computer science'
-2
-'exams'
-2024-11-05 14:54:00
-2024-11-04 14:54:00
-2024-11-04 14:54:30
-'COMPUTER SCIENCE'
-NULL
-NULL
-active
-)
+INSERT INTO EXM_LIST VALUES (20, 'computer science', 2, 'exams', '2024-11-05 14:54:00', '2024-11-04 14:54:00', '2024-11-04 14:54:30', 'COMPUTER SCIENCE', NULL, NULL, 'active');
 -- --------------------------------------------------------
 
 --
@@ -74,12 +63,11 @@ active
 --
 
 CREATE TABLE `message` (
-  `id` int(11) NOT NULL,
-  `fname` varchar(100) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `feedback` varchar(1000) NOT NULL
+    `1st_init` INT(1) NOT NULL,
+    `thame` VARCHAR(100) NOT NULL,
+    `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    `feedback` VARCHAR(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 --
 -- Dumping data for table `message`
 --
