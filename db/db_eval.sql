@@ -55,6 +55,18 @@ CREATE TABLE `exm_list` (
   `subject` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO EXM_LIST VALUES (20
+'computer science'
+2
+'exams'
+2024-11-05 14:54:00
+2024-11-04 14:54:00
+2024-11-04 14:54:30
+'COMPUTER SCIENCE'
+NULL
+NULL
+active
+)
 -- --------------------------------------------------------
 
 --
@@ -203,6 +215,24 @@ INSERT INTO `user_roles` (`role`, `permissions`) VALUES
 ('teacher', 'view_dashboard,manage_assessments,view_reports'),
 ('student', 'view_dashboard,view_reports');
 
+CREATE TABLE HELP_REQUESTS (
+  ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  NAME VARCHAR(255) NOT NULL,
+  EMAIL VARCHAR(300) NOT NULL ,
+  MESSAGE VARCHAR(3000) not NULL,
+  CREARED_AT VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE PROCTORING_LOGS(
+  ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  EXAM_ID VARCHAR(50) INDEX,
+  USER_ID VARCHAR(50) INDEX,
+  VIOLATION_TYPE VARCHAR(50),
+  DETAILS TEXT,
+  `TIMESTAMP` DATETIME,
+  SEVERITY VARCHAR(20)
+);
+
 -- Indexes for dumped tables
 ALTER TABLE `report_templates`
   ADD PRIMARY KEY (`id`);
@@ -250,6 +280,18 @@ ALTER TABLE `message`
 ALTER TABLE `qstn_list`
   ADD PRIMARY KEY (`qid`);
 
+ALTER TABLE QSTN_LIST
+ ADD QUESTION mediumtext;
+
+ALTER TABLE QSTN_LIST
+ ADD TESTCASES MEDIUMTEXT;
+
+ALTER TABLE QSTN_LIST
+ ADD TIME_COMPLEXITY MEDIUMTEXT;
+
+ALTER TABLE QSTN_LIST
+ ADD EXPECTED_OUTPUT MEDIUMTEXT;
+
 --
 -- Indexes for table `student`
 --
@@ -278,6 +320,11 @@ ALTER TABLE `atmpt_list`
 ALTER TABLE `exm_list`
   MODIFY `exid` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
+ALTER TABLE `exm_list` ADD ACCESSIBILITY TEXT;
+
+ALTER TABLE `exm_list` ADD proctoring TEXT;
+
+ALTER TABLE `exm_list` ADD status TEXT;
 --
 -- AUTO_INCREMENT for table `message`
 --
