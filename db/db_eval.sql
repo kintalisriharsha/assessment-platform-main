@@ -52,10 +52,19 @@ CREATE TABLE `exm_list` (
   `subt` datetime NOT NULL,
   `extime` datetime NOT NULL,
   `datetime` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `subject` varchar(100) NOT NULL
+  `subject` varchar(100) NOT NULL,
+  `accessibility` text DEFAULT NULL,
+  `proctoring` text DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO EXM_LIST VALUES (20, 'computer science', 2, 'exams', '2024-11-05 14:54:00', '2024-11-04 14:54:00', '2024-11-04 14:54:30', 'COMPUTER SCIENCE', NULL, NULL, 'active');
+--
+-- Dumping data for table `exm_list`
+--
+
+INSERT INTO `exm_list` (`exid`, `exname`, `nq`, `desp`, `subt`, `extime`, `datetime`, `subject`, `accessibility`, `proctoring`, `status`) VALUES
+(20, 'computer science', 2, 'exams', '2024-11-05 14:54:00', '2024-11-04 14:54:00', '2024-11-04 14:54:30', 'COMPUTER SCIENCE', NULL, NULL, 'active');
+
 -- --------------------------------------------------------
 
 --
@@ -63,18 +72,19 @@ INSERT INTO EXM_LIST VALUES (20, 'computer science', 2, 'exams', '2024-11-05 14:
 --
 
 CREATE TABLE `message` (
-    `1st_init` INT(1) NOT NULL,
-    `thame` VARCHAR(100) NOT NULL,
-    `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-    `feedback` VARCHAR(1000) NOT NULL
+  `id` int(11) NOT NULL,
+  `fname` varchar(100) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `feedback` varchar(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Dumping data for table `message`
 --
 
 INSERT INTO `message` (`id`, `fname`, `date`, `feedback`) VALUES
 (5, 'Teacher Rosey', '2021-12-12 13:01:00', 'Please kindly complete all the homework and submit tomorrow '),
-(6, 'Teacher Rosey', '2021-12-13 06:23:18', 'Hello this is an annoucement');
+(6, 'Teacher Rosey', '2021-12-13 06:23:18', 'Hello this is an announcement');
 
 -- --------------------------------------------------------
 
@@ -92,7 +102,11 @@ CREATE TABLE `qstn_list` (
   `qstn_o4` varchar(100) NOT NULL,
   `qstn_ans` varchar(100) NOT NULL,
   `sno` int(20) NOT NULL,
-  `qstn_type` varchar(100) NOT NULL
+  `qstn_type` varchar(100) NOT NULL,
+  `question` mediumtext DEFAULT NULL,
+  `Testcases` mediumtext DEFAULT NULL,
+  `TIME_COMPLEXITY` mediumtext DEFAULT NULL,
+  `EXPECTED_OUTPUT` mediumtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -145,19 +159,35 @@ INSERT INTO `teacher` (`id`, `uname`, `pword`, `fname`, `dob`, `gender`, `email`
 (1, 'teacher', '8d788385431273d11e8b43bb78f3aa41', 'Jack Rosso', '2021-12-01', 'M', 'teacher@teach.com', 'CHEMISTRY'),
 (2, 'teacher2', 'ccffb0bb993eeb79059b31e1611ec353', 'Rosey', '2021-12-01', 'F', 'teacher@gmail.com', 'BIOLOGY');
 
-CREATE TABLE `ADMIN` (
-  `id` INT NOT NULL PRIMARY KEY,
-  `uname` VARCHAR(255) NOT NULL,
-  `pword` VARCHAR(255) NOT NULL,
-  `fname` VARCHAR(255) NOT NULL,
-  `dob` DATE NOT NULL,
-  `gender` VARCHAR(1) NOT NULL,
-  `email` VARCHAR(255) NOT NULL
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin`
+--
+
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
+  `uname` varchar(255) NOT NULL,
+  `pword` varchar(255) NOT NULL,
+  `fname` varchar(255) NOT NULL,
+  `dob` date NOT NULL,
+  `gender` varchar(1) NOT NULL,
+  `email` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO ADMIN (`id`, `uname`, `pword`, `fname`, `dob`, `gender`, `email`) VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Admin', '2021-12-01', 'M', 'admin@gmail.com');
+--
+-- Dumping data for table `admin`
+--
 
+INSERT INTO `admin` (`id`, `uname`, `pword`, `fname`, `dob`, `gender`, `email`) VALUES
+(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Admin', '2021-12-01', 'M', 'admin@gmail.com');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `report_templates`
+--
+
 CREATE TABLE `report_templates` (
   `id` int(11) NOT NULL,
   `template_name` varchar(100) NOT NULL,
@@ -166,7 +196,12 @@ CREATE TABLE `report_templates` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `analytics_data`
+--
+
 CREATE TABLE `analytics_data` (
   `id` int(11) NOT NULL,
   `metric_name` varchar(100) NOT NULL,
@@ -174,7 +209,12 @@ CREATE TABLE `analytics_data` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `comparison_data`
+--
+
 CREATE TABLE `comparison_data` (
   `id` int(11) NOT NULL,
   `metric_name` varchar(100) NOT NULL,
@@ -183,63 +223,92 @@ CREATE TABLE `comparison_data` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_settings`
+--
+
 CREATE TABLE `api_settings` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `api_key` VARCHAR(255) NOT NULL,
-  `api_secret` VARCHAR(255) NOT NULL
+  `id` int(11) NOT NULL,
+  `api_key` varchar(255) NOT NULL,
+  `api_secret` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `api_settings` (`api_key`, `api_secret`) VALUES
-('default_api_key', 'default_api_secret');
+--
+-- Dumping data for table `api_settings`
+--
+
+INSERT INTO `api_settings` (`id`, `api_key`, `api_secret`) VALUES
+(1, 'default_api_key', 'default_api_secret');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_roles`
+--
 
 CREATE TABLE `user_roles` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `role` VARCHAR(50) NOT NULL,
-  `permissions` TEXT NOT NULL
+  `id` int(11) NOT NULL,
+  `role` varchar(50) NOT NULL,
+  `permissions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `user_roles` (`role`, `permissions`) VALUES
-('admin', 'view_dashboard,manage_users,manage_assessments,view_reports'),
-('teacher', 'view_dashboard,manage_assessments,view_reports'),
-('student', 'view_dashboard,view_reports');
+--
+-- Dumping data for table `user_roles`
+--
 
-CREATE TABLE HELP_REQUESTS (
-  ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  NAME VARCHAR(255) NOT NULL,
-  EMAIL VARCHAR(300) NOT NULL ,
-  MESSAGE VARCHAR(3000) not NULL,
-  CREARED_AT VARCHAR(255) NOT NULL
-);
+INSERT INTO `user_roles` (`id`, `role`, `permissions`) VALUES
+(1, 'admin', 'view_dashboard,manage_users,manage_assessments,view_reports'),
+(2, 'teacher', 'view_dashboard,manage_assessments,view_reports'),
+(3, 'student', 'view_dashboard,view_reports');
 
-CREATE TABLE PROCTORING_LOGS(
-  ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  EXAM_ID VARCHAR(50) INDEX,
-  USER_ID VARCHAR(50) INDEX,
-  VIOLATION_TYPE VARCHAR(50),
-  DETAILS TEXT,
-  `TIMESTAMP` DATETIME,
-  SEVERITY VARCHAR(20)
-);
+-- --------------------------------------------------------
 
--- Indexes for dumped tables
-ALTER TABLE `report_templates`
-  ADD PRIMARY KEY (`id`);
+--
+-- Table structure for table `help_requests`
+--
 
-ALTER TABLE `analytics_data`
-  ADD PRIMARY KEY (`id`);
+CREATE TABLE `help_requests` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(300) NOT NULL,
+  `message` varchar(3000) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `comparison_data`
-  ADD PRIMARY KEY (`id`);
+--
+-- Dumping data for table `help_requests`
+--
 
--- AUTO_INCREMENT for dumped tables
-ALTER TABLE `report_templates`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+INSERT INTO `help_requests` (`id`, `name`, `email`, `message`, `created_at`) VALUES
+(1, 'John Doe', 'john.doe@example.com', 'I need help with my account.', '2023-10-01 10:00:00'),
+(2, 'Jane Smith', 'jane.smith@example.com', 'How do I reset my password?', '2023-10-02 11:00:00');
 
-ALTER TABLE `analytics_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+-- --------------------------------------------------------
 
-ALTER TABLE `comparison_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- Table structure for table `proctoring_logs`
+--
+
+CREATE TABLE `proctoring_logs` (
+  `id` int(11) NOT NULL,
+  `exam_id` varchar(50) DEFAULT NULL,
+  `user_id` varchar(50) DEFAULT NULL,
+  `violation_type` varchar(50) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `severity` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `proctoring_logs`
+--
+
+INSERT INTO `proctoring_logs` (`id`, `exam_id`, `user_id`, `violation_type`, `details`, `timestamp`, `severity`) VALUES
+(1, 'exam123', 'user123', 'face_not_detected', 'Face not detected for 30 seconds.', '2023-10-01 10:00:00', 'high'),
+(2, 'exam123', 'user456', 'multiple_faces', 'Multiple faces detected.', '2023-10-01 10:05:00', 'medium');
+
 --
 -- Indexes for dumped tables
 --
@@ -268,18 +337,6 @@ ALTER TABLE `message`
 ALTER TABLE `qstn_list`
   ADD PRIMARY KEY (`qid`);
 
-ALTER TABLE QSTN_LIST
- ADD QUESTION mediumtext;
-
-ALTER TABLE QSTN_LIST
- ADD TESTCASES MEDIUMTEXT;
-
-ALTER TABLE QSTN_LIST
- ADD TIME_COMPLEXITY MEDIUMTEXT;
-
-ALTER TABLE QSTN_LIST
- ADD EXPECTED_OUTPUT MEDIUMTEXT;
-
 --
 -- Indexes for table `student`
 --
@@ -290,6 +347,54 @@ ALTER TABLE `student`
 -- Indexes for table `teacher`
 --
 ALTER TABLE `teacher`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `report_templates`
+--
+ALTER TABLE `report_templates`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `analytics_data`
+--
+ALTER TABLE `analytics_data`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `comparison_data`
+--
+ALTER TABLE `comparison_data`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `api_settings`
+--
+ALTER TABLE `api_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user_roles`
+--
+ALTER TABLE `user_roles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `help_requests`
+--
+ALTER TABLE `help_requests`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `proctoring_logs`
+--
+ALTER TABLE `proctoring_logs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -308,11 +413,6 @@ ALTER TABLE `atmpt_list`
 ALTER TABLE `exm_list`
   MODIFY `exid` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
-ALTER TABLE `exm_list` ADD ACCESSIBILITY TEXT;
-
-ALTER TABLE `exm_list` ADD proctoring TEXT;
-
-ALTER TABLE `exm_list` ADD status TEXT;
 --
 -- AUTO_INCREMENT for table `message`
 --
@@ -336,7 +436,55 @@ ALTER TABLE `student`
 --
 ALTER TABLE `teacher`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
- 
+
+--
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `report_templates`
+--
+ALTER TABLE `report_templates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `analytics_data`
+--
+ALTER TABLE `analytics_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `comparison_data`
+--
+ALTER TABLE `comparison_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `api_settings`
+--
+ALTER TABLE `api_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `user_roles`
+--
+ALTER TABLE `user_roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `help_requests`
+--
+ALTER TABLE `help_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `proctoring_logs`
+--
+ALTER TABLE `proctoring_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
