@@ -1,5 +1,5 @@
 <?php
 
-header("Location: assessment-system-main\login_student.php");
+header("Location: login_student");
 
 ?>
