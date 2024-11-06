@@ -1,5 +1,5 @@
 <?php
 
-header("Location: login_student");
+header("Location: login_student.php");
 
 ?>
