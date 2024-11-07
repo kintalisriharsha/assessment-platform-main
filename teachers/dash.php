@@ -152,7 +152,22 @@ include '../config.php';
                         ?>
                             <tr>
                             <td id="res"><?php $dptime=$row['subtime']; $dptime=date("M d, Y", strtotime($dptime)); echo $dptime; ?></td>
-                            <td id="res"><?php $uname=$row['uname']; $sql_name="SELECT * FROM student WHERE uname='$uname'"; $result_name=mysqli_query($conn, $sql_name); $row_name=mysqli_fetch_assoc($result_name); echo $row_name['fname']; ?></td>
+                            <td id="res">
+<?php
+    $uname = $row['uname'];
+    if ($uname !== null) {
+        $sql_name = "SELECT * FROM student WHERE uname='$uname'";
+        $result_name = mysqli_query($conn, $sql_name);
+        if ($result_name && $row_name = mysqli_fetch_assoc($result_name)) {
+            echo $row_name['fname'];
+        } else {
+            echo "N/A"; // or any other placeholder text
+        }
+    } else {
+        echo "N/A"; // or any other placeholder text
+    }
+?>
+</td>
                             <td id="res"><?php $exid=$row['exid']; $sql_exname="SELECT * FROM exm_list WHERE exid='$exid'"; $result_exname=mysqli_query($conn, $sql_exname); $row_exname=mysqli_fetch_assoc($result_exname); echo $row_exname['exname']; ?></td>
                             <td id="res"><?php  echo $row['ptg']; ?>%</td>
                             </tr>

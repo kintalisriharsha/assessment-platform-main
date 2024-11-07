@@ -29,41 +29,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 function generateReport($conn) {
-  $metrics = isset($_POST['metrics']) ? $_POST['metrics'] : [];
-  $filters = isset($_POST['filters']) ? $_POST['filters'] : [];
+    $metrics = isset($_POST['metrics']) ? $_POST['metrics'] : [];
+    $filters = isset($_POST['filters']) ? $_POST['filters'] : [];
 
-  if (empty($metrics)) {
-      echo "<div class='alert alert-error'>Please select at least one metric. <i class='bx bx-message-x' onclick='removeMessage()' style='float:right;'></i> </div>";
-      return;
-  }
+    if (empty($metrics)) {
+        echo "<div class='alert alert-error'>Please select at least one metric. <i class='bx bx-message-x' onclick='removeMessage()' style='float:right;'></i> </div>";
+        return;
+    }
 
-  $sql = "SELECT * FROM atmpt_list";
-  foreach ($metrics as $metric) {
-      $sql .= "$metric, ";
-  }
-  $sql = rtrim($sql, ", ");
-  $sql .= " FROM atmpt_list";
+    $sql = "SELECT ";
+    foreach ($metrics as $metric) {
+        $sql .= "$metric, ";
+    }
+    $sql = rtrim($sql, ", ");
+    $sql .= " FROM atmpt_list";
 
-  $params = [];
-  $paramTypes = "";
-  $paramValues = [];
+    $params = [];
+    $paramTypes = "";
+    $paramValues = [];
 
-  if (!empty($filters)) {
-      $sql .= " WHERE ";
-      foreach ($filters as $filter) {
-          $sql .= "$filter = ? AND ";
-          $params[] = &$paramValues[$filter];
-          $paramTypes .= "s";
-      }
-      $sql = rtrim($sql, " AND ");
-  }
+    if (!empty($filters)) {
+        $sql .= " WHERE ";
+        foreach ($filters as $filter) {
+            $sql .= "$filter = ? AND ";
+            $params[] = &$paramValues[$filter];
+            $paramTypes .= "s";
+        }
+        $sql = rtrim($sql, " AND ");
+    }
 
-  $stmt = $conn->prepare($sql);
-  if (!empty($filters)) {
-      array_unshift($params, $paramTypes);
-      call_user_func_array([$stmt, 'bind_param'], $params);
-  }
-  $stmt->close();
+    $stmt = $conn->prepare($sql);
+    if (!empty($filters)) {
+        array_unshift($params, $paramTypes);
+        call_user_func_array([$stmt, 'bind_param'], $params);
+    }
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // echo "<div class='table-container'>";
+            // echo "<table>";
+            // echo "<thead><tr>";
+            foreach ($metrics as $metric) {
+                // echo "<th>" . ucfirst($metric) . "</th>";
+            }
+            echo "</tr></thead><tbody>";
+            while ($row = $result->fetch_assoc()) {
+                // echo "<tr>";
+                // foreach ($metrics as $metric) {
+                    // echo "<td>" . htmlspecialchars($row[$metric]) . "</td>";
+                // }
+                // echo "</tr>";
+            }
+            // echo "</tbody></table></div>";
+        } else {
+            echo "<div class='alert alert-info'>No results found <i class='bx bx-message-x' onclick='removeMessage()' style='float:right;'></i> </div>";
+        }
+    } else {
+        echo "<div class='alert alert-error'>Error executing the query: " . htmlspecialchars($stmt->error) . " <i class='bx bx-message-x' onclick='removeMessage()' style='float:right;'></i> </div>";
+    }
+
+    $stmt->close();
 }
 
 
@@ -428,19 +455,12 @@ function generateXmlPdf($data) {
     </div>
 </div>
 
-      <div id="analytics" class="section">
-      <h1>Real-Time Analytics Dashboard</h1>
-        <div class="chart-container" id="chartContainer">
-            <div class="chart">
-                <div class="y-axis axis"></div>
-                <div class="x-axis axis"></div>
-                <div class="y-labels axis-labels"></div>
-                <div class="x-labels axis-labels"></div>
-                <div id="dataPoints"></div>
+        <div id="analytics" class="section">
+            <h1>Real-Time Analytics Dashboard</h1>
+            <div class="chart-container">
+                <canvas id="analyticsChart"></canvas>
             </div>
         </div>
-        <div class="legend" id="legend"></div>
-      </div>
         <div id="comparison" class="section">
             <form action="" method="post">
                 <input type="hidden" name="action" value="compare_data">
