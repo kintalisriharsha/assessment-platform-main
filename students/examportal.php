@@ -165,42 +165,48 @@ while ($rowd = mysqli_fetch_array($res)) {
                       <span class="question-number">Q' . $i . '.</span>
                       <span class="question-text">' . $row['qstn'] . '</span>
                     </div>';
-                  if ($row['qstn_type'] == 'coding') {
-                    echo '
-                    <div class="grid">
-                      <div class="left-column">
-                        <div class="problem-section">
-                         <h3>Problem Name</h3>
-                          <p>' . $row['qstn'] . '</p>
-                        </div>
-                        <div class="problem-section">
-                          <h4>Problem Statement</h4>
-                          <div class="prose">' . $row['question'] . '</div>
-                        </div>
-
-                        <div class="test-cases-section">
-                          <h4>Test Cases</h4>
-                          <pre>' . $row['Testcases'] . '</pre>
-                        </div>
-      
-                        <div class="complexity-section">
-                          <h4>Time Complexity</h4>
-                          <div class="prose">' . $row['TIME_COMPLEXITY'] . '</div>
-                        </div>
-      
-                        <div class="output-section">
-                          <h4>Expected Output</h4>
-                          <pre>' . $row['EXPECTED_OUTPUT'] . '</pre>
-                        </div>
-                      </div>
-    
-                    <div class="right-column">
-                      <div data-pym-src="https://www.jdoodle.com/embed/v1/4704914ecd89a070"></div>
-                      <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"> </script>
-                    </div>
-                    </div>
-                    ';
-                  } else if($row['qstn_type'] == 'single_choice') {
+                   
+if ($row['qstn_type'] == 'coding') {
+    echo '
+    <div class="grid">
+        <div class="left-column">
+            <div class="problem-section">
+                <h3>Problem Name</h3>
+                <p>' . htmlspecialchars($row['qstn']) . '</p>
+            </div>
+            <div class="problem-section">
+                <h4>Problem Statement</h4>
+                <div class="prose">' . htmlspecialchars($row['question']) . '</div>
+            </div>
+            <div class="test-cases-section">
+                <h4>Sample Test Cases</h4>
+                <pre>' . htmlspecialchars($row['Testcases']) . '</pre>
+            </div>
+            <div class="complexity-section">
+                <h4>Time Complexity</h4>
+                <div class="prose">' . htmlspecialchars($row['TIME_COMPLEXITY']) . '</div>
+            </div>
+            <div class="output-section">
+                <h4>Expected Output</h4>
+                <pre>' . htmlspecialchars($row['EXPECTED_OUTPUT']) . '</pre>
+            </div>
+        </div>
+        <div class="right-column">
+            <textarea 
+                id="codeEditor' . $i . '" 
+                name="code' . $i . '" 
+                class="code-editor"
+                data-question-number="' . $i . '"
+                rows="10" 
+                cols="50"
+            ></textarea>
+            <button type="button" class="test-code-btn" data-editor="codeEditor' . $i . '">Test Code</button>
+            <pre id="output' . $i . '" class="code-output"></pre>
+            <input type="hidden" name="code_language' . $i . '" value="python3">
+        </div>
+    </div>';
+}
+ else if($row['qstn_type'] == 'single_choice') {
                     echo '<div class="options-container single-choice">';
                     $options = array($row['qstn_o1'], $row['qstn_o2'], $row['qstn_o3'], $row['qstn_o4']);
                     foreach ($options as $index => $option) {
@@ -380,6 +386,119 @@ while ($rowd = mysqli_fetch_array($res)) {
         }
       });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+    const codeEditor = document.getElementById('codeEditor');
+    const executeBtn = document.getElementById('executeCodeBtn');
+    const outputArea = document.getElementById('output');
+
+    executeBtn.addEventListener('click', function() {
+        // Show loading state
+        executeBtn.disabled = true;
+        executeBtn.textContent = 'Executing...';
+        outputArea.textContent = 'Running code...';
+
+        const script = codeEditor.value;
+        const language = 'python3'; // You can make this dynamic based on question requirements
+
+        fetch('jdoodle_execute.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                script: script,
+                language: language
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            executeBtn.disabled = false;
+            executeBtn.textContent = 'Execute Code';
+            
+            if (data.error) {
+                outputArea.textContent = `Error: ${data.error}`;
+                outputArea.style.color = '#d32f2f';
+            } else {
+                outputArea.textContent = data.output || data.result;
+                outputArea.style.color = '#000';
+            }
+        })
+        .catch((error) => {
+            executeBtn.disabled = false;
+            executeBtn.textContent = 'Execute Code';
+            outputArea.textContent = `Error: ${error.message}`;
+            outputArea.style.color = '#d32f2f';
+            console.error('Error:', error);
+        });
+    });
+
+    // Add keyboard shortcut (Ctrl/Cmd + Enter) to execute code
+    codeEditor.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            executeBtn.click();
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all test code buttons
+    document.querySelectorAll('.test-code-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const editorId = this.dataset.editor;
+            const editor = document.getElementById(editorId);
+            const questionNumber = editor.dataset.questionNumber;
+            const outputElement = document.getElementById('output' + questionNumber);
+            
+            // Show loading state
+            this.disabled = true;
+            this.textContent = 'Running...';
+            outputElement.textContent = 'Executing code...';
+
+            fetch('jdoodle_execute.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    script: editor.value,
+                    language: 'python3'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.disabled = false;
+                this.textContent = 'Test Code';
+                
+                if (data.error) {
+                    outputElement.textContent = `Error: ${data.error}`;
+                    outputElement.classList.add('error');
+                } else {
+                    outputElement.textContent = data.output;
+                    outputElement.classList.remove('error');
+                }
+            })
+            .catch((error) => {
+                this.disabled = false;
+                this.textContent = 'Test Code';
+                outputElement.textContent = `Error: ${error.message}`;
+                outputElement.classList.add('error');
+                console.error('Error:', error);
+            });
+        });
+    });
+
+    // Add form submission handler
+    document.getElementById('form1').addEventListener('submit', function(e) {
+        // Save all code editor contents to their respective hidden fields
+        document.querySelectorAll('.code-editor').forEach(editor => {
+            const questionNumber = editor.dataset.questionNumber;
+            if (!editor.value.trim()) {
+                editor.value = '# No code submitted';
+            }
+        });
+    });
+});
   </script>
 </body>
 

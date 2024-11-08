@@ -221,6 +221,22 @@ CREATE TABLE PROCTORING_LOGS(
   SEVERITY VARCHAR(20)
 );
 
+CREATE TABLE code_submissions (
+    submission_id INT PRIMARY KEY AUTO_INCREMENT,
+    qid VARCHAR(255) NOT NULL,
+    exid VARCHAR(255) NOT NULL,
+    uname VARCHAR(255) NOT NULL,
+    submitted_code TEXT NOT NULL,
+    submission_time DATETIME NOT NULL,
+    execution_output TEXT,
+    passed_tests BOOLEAN,
+    execution_time FLOAT,
+    memory_used VARCHAR(50),
+    FOREIGN KEY (qid) REFERENCES qstn_list(qid),
+    FOREIGN KEY (exid) REFERENCES exm_list(exid),
+    INDEX idx_user_exam (uname, exid)
+);
+
 -- Indexes for dumped tables
 ALTER TABLE `report_templates`
   ADD PRIMARY KEY (`id`);

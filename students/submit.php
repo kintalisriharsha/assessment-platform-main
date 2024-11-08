@@ -2,64 +2,124 @@
 session_start();
 if (!isset($_POST["exid"])) {
     header("Location: dash.php");
+    exit();
 }
 
 include '../config.php';
-$j = 0;
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (isset($_POST["exid"])) {
     $nq = mysqli_real_escape_string($conn, $_POST["nq"]);
     $exid = mysqli_real_escape_string($conn, $_POST["exid"]);
     $uname = mysqli_real_escape_string($conn, $_SESSION["uname"]);
+    $j = 0; // Counter for correct answers
+    $total_questions = $nq; // Total number of questions for percentage calculation
+    $current_time = date('Y-m-d H:i:s');
 
+    // Process each question
     for ($i = 1; $i <= $nq; $i++) {
         $qid = mysqli_real_escape_string($conn, $_POST['qid' . $i]);
-        $submitted_answer = isset($_POST['o' . $i]) ? $_POST['o' . $i] : null;
-
+        
+        // Get question details
         $sql = "SELECT * FROM qstn_list WHERE exid='$exid' AND qid='$qid'";
         $result = mysqli_query($conn, $sql);
-
+        
         if (mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
-            $correct_answer = $row['qstn_ans'];
             $qstn_type = $row['qstn_type'];
-
-            if ($qstn_type == 'multiple_choice') {
-                // Handle multiple choice questions
-                if (is_array($submitted_answer)) {
-                    // Sort both arrays to ensure consistent comparison
-                    $submitted_answers = array_map('trim', $submitted_answer);
-                    sort($submitted_answers);
+            
+            if ($qstn_type == 'coding') {
+                // Handle coding questions
+                $submitted_code = isset($_POST['code' . $i]) ? mysqli_real_escape_string($conn, $_POST['code' . $i]) : '# No code submitted';
+                $code_language = mysqli_real_escape_string($conn, $_POST['code_language' . $i]);
+                
+                // Store code submission
+                $sql_submission = "INSERT INTO code_submissions (
+                    qid, 
+                    exid, 
+                    uname, 
+                    submitted_code, 
+                    submission_time
+                ) VALUES (
+                    '$qid',
+                    '$exid',
+                    '$uname',
+                    '$submitted_code',
+                    '$current_time'
+                )";
+                
+                if (!mysqli_query($conn, $sql_submission)) {
+                    error_log("Error storing code submission: " . mysqli_error($conn));
+                }
+                
+                // Don't increment j here since coding evaluation will be done separately
+                $total_questions--; // Decrease total questions as coding won't be part of immediate scoring
+                
+            } else {
+                // Handle choice questions (single and multiple)
+                $correct_answer = $row['qstn_ans'];
+                
+                if ($qstn_type == 'multiple_choice') {
+                    // Handle multiple choice questions
+                    $submitted_answer = isset($_POST['o' . $i]) ? $_POST['o' . $i] : array();
                     
-                    $correct_answers = array_map('trim', explode(',', $correct_answer));
-                    sort($correct_answers);
-
-                    // Convert to strings for comparison
-                    $submitted_string = implode(',', $submitted_answers);
-                    $correct_string = implode(',', $correct_answers);
-
-                    if ($submitted_string === $correct_string) {
+                    if (is_array($submitted_answer)) {
+                        // Sort both arrays for consistent comparison
+                        $submitted_answers = array_map('trim', $submitted_answer);
+                        sort($submitted_answers);
+                        
+                        $correct_answers = array_map('trim', explode(',', $correct_answer));
+                        sort($correct_answers);
+                        
+                        // Compare as strings
+                        if (implode(',', $submitted_answers) === implode(',', $correct_answers)) {
+                            $j++;
+                        }
+                    }
+                    
+                } else if ($qstn_type == 'single_choice') {
+                    // Handle single choice questions
+                    $submitted_answer = isset($_POST['o' . $i]) ? $_POST['o' . $i] : '';
+                    
+                    if ($submitted_answer == $correct_answer) {
                         $j++;
                     }
                 }
-            } else if ($qstn_type == 'single_choice') {
-                // Handle single choice questions
-                if ($correct_answer == $submitted_answer) {
-                    $j++;
-                }
             }
-        } else {
-            error_log("No result found for Question ID: $qid");
         }
     }
-
-    // Calculate percentage and store results
-    $ptg = ($j / $nq) * 100;
-    $st = 1;
     
-    $sql = "INSERT INTO atmpt_list (exid, uname, nq, cnq, ptg, status) 
-            VALUES ('$exid', '$uname', '$nq', '$j', '$ptg', '$st')";
-    $result = mysqli_query($conn, $sql);
+    // Calculate percentage based on choice questions only
+    $percentage = $total_questions > 0 ? ($j / $total_questions) * 100 : 0;
     
-    header("Location: results.php");
+    // Insert attempt record
+    $status = 1; // Completed
+    $sql_attempt = "INSERT INTO atmpt_list (
+        exid, 
+        uname, 
+        nq, 
+        cnq, 
+        ptg, 
+        status
+    ) VALUES (
+        '$exid',
+        '$uname',
+        '$total_questions',
+        '$j',
+        '$percentage',
+        '$status'
+    )";
+    
+    if (mysqli_query($conn, $sql_attempt)) {
+        header("Location: results.php");
+        exit();
+    } else {
+        error_log("Error inserting attempt: " . mysqli_error($conn));
+        echo "An error occurred while submitting your exam. Please contact support.";
+    }
+} else {
+    header("Location: dash.php");
+    exit();
 }
 ?>

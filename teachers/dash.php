@@ -143,41 +143,39 @@ include '../config.php';
                     </thead>
                     <tbody>
                     <?php
-                        $sql="SELECT * FROM atmpt_list ORDER BY subtime DESC LIMIT 8";
-                        $result = mysqli_query($conn, $sql);
-                        if(mysqli_num_rows($result) > 0)        
-                        {
-                            while($row = mysqli_fetch_assoc($result))
-                            {
-                        ?>
-                            <tr>
-                            <td id="res"><?php $dptime=$row['subtime']; $dptime=date("M d, Y", strtotime($dptime)); echo $dptime; ?></td>
-                            <td id="res">
-<?php
-    $uname = $row['uname'];
-    if ($uname !== null) {
-        $sql_name = "SELECT * FROM student WHERE uname='$uname'";
-        $result_name = mysqli_query($conn, $sql_name);
-        if ($result_name && $row_name = mysqli_fetch_assoc($result_name)) {
-            echo $row_name['fname'];
-        } else {
-            echo "N/A"; // or any other placeholder text
-        }
-    } else {
-        echo "N/A"; // or any other placeholder text
+$sql = "SELECT a.*, s.fname, e.exname 
+        FROM atmpt_list a
+        LEFT JOIN student s ON a.uname = s.uname
+        LEFT JOIN exm_list e ON a.exid = e.exid
+        ORDER BY a.subtime DESC 
+        LIMIT 8";
+$result = mysqli_query($conn, $sql);
+if(mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+        ?>
+        <tr>
+            <td id="res"><?php 
+                $dptime = $row['subtime']; 
+                $dptime = date("M d, Y", strtotime($dptime)); 
+                echo htmlspecialchars($dptime); 
+            ?></td>
+            <td id="res"><?php 
+                echo !empty($row['fname']) ? htmlspecialchars($row['fname']) : 'N/A'; 
+            ?></td>
+            <td id="res"><?php 
+                echo !empty($row['exname']) ? htmlspecialchars($row['exname']) : 'N/A'; 
+            ?></td>
+            <td id="res"><?php 
+                echo htmlspecialchars($row['ptg']); 
+            ?>%</td>
+        </tr>
+        <?php
     }
+}
 ?>
-</td>
-                            <td id="res"><?php $exid=$row['exid']; $sql_exname="SELECT * FROM exm_list WHERE exid='$exid'"; $result_exname=mysqli_query($conn, $sql_exname); $row_exname=mysqli_fetch_assoc($result_exname); echo $row_exname['exname']; ?></td>
-                            <td id="res"><?php  echo $row['ptg']; ?>%</td>
-                            </tr>
-                            <?php
-                            } 
-                        }
-                        ?>
                     </tbody>
                 </table>
-          <div class="button" style="">
+          <div class="button">
             <a href="results.php">See All</a>
           </div>
         </div>
